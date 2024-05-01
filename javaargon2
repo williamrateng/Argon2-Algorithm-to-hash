@@ -1,0 +1,33 @@
+import de.mkammerer.argon2.Argon2;
+import de.mkammerer.argon2.Argon2Factory;
+
+public class SecurePasswordHasher {
+    public static void main(String[] args) {
+        String password = "Your_Secure_Password";
+        String hashedPassword = hashPassword(password);
+        System.out.println("Hashed Password: " + hashedPassword);
+
+        boolean passwordMatch = verifyPassword(password, hashedPassword);
+        System.out.println("Password verification: " + (passwordMatch ? "Successful" : "Failed"));
+    }
+
+    public static String hashPassword(String password) {
+        Argon2 argon2 = Argon2Factory.create();
+        try {
+            // Hash the password with a random salt and default parameters
+            return argon2.hash(2, 65536, 1, password);
+        } finally {
+            argon2.wipeArray(password.toCharArray());
+        }
+    }
+
+    public static boolean verifyPassword(String password, String hash) {
+        Argon2 argon2 = Argon2Factory.create();
+        try {
+            // Verify the password against the hash
+            return argon2.verify(hash, password);
+        } finally {
+            argon2.wipeArray(password.toCharArray());
+        }
+    }
+}
